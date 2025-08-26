@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContextType, LoginCredentials, User } from '../types';
-import { authAPI } from '../services/api';
+import { authAPI } from '../services/Api';
 
 // Helper function for development-only logging
 const devLog = (message: string, ...args: any[]) => {

@@ -44,6 +44,10 @@ COPY docker/config/nginx.conf /etc/nginx/sites-available/default
 # Copy supervisor configuration to manage both services
 COPY docker/config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+# Copy startup script
+COPY docker/start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
 # Create necessary directories
 RUN mkdir -p /var/log/supervisor /var/log/nginx
 
@@ -51,4 +55,4 @@ RUN mkdir -p /var/log/supervisor /var/log/nginx
 EXPOSE 80 5001
 
 # Start supervisor to manage both services
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/app/start.sh"]

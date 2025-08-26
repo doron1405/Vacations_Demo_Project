@@ -21,7 +21,7 @@ import {
     FiCalendar,
     FiRefreshCw,
 } from 'react-icons/fi';
-import { statsAPI } from '../services/api';
+import { statsAPI } from '../services/Api';
 import { SummaryStats } from '../types';
 import './Dashboard.css';
 
