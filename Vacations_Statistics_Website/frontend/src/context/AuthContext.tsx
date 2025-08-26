@@ -1,4 +1,6 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authAPI } from '../services/Api';
 
 interface User {
   email: string;
@@ -32,47 +34,84 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Проверяем сохраненные данные при загрузке
+    const storedToken = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
+
+    if (storedToken && storedUser) {
+      try {
+        setToken(storedToken);
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error('Error parsing stored user data:', error);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
+    }
+
+    setIsLoading(false);
+  }, []);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Симулируем API вызов
-      console.log('Login attempt:', { email, password });
+      console.log('🔐 Attempting login for:', email);
       
-      // Для демонстрации - успешный логин
-      if (email === 'admin@example.com' && password === 'admin123') {
-        const mockUser: User = {
-          email: 'admin@example.com',
-          first_name: 'Admin',
-          last_name: 'User'
-        };
-        const mockToken = 'mock-jwt-token-12345';
-        
-        setUser(mockUser);
-        setToken(mockToken);
-        localStorage.setItem('token', mockToken);
-        localStorage.setItem('user', JSON.stringify(mockUser));
-        
-        alert('Login successful! (Mock authentication)');
+      const response = await authAPI.login({ email, password });
+      
+      console.log('✅ Login successful:', response.user);
+      
+      // Сохраняем данные
+      localStorage.setItem('token', response.access_token);
+      localStorage.setItem('user', JSON.stringify(response.user));
+      
+      setToken(response.access_token);
+      setUser(response.user);
+      
+      // Переходим на dashboard
+      navigate('/dashboard');
+      
+    } catch (error: any) {
+      console.error('❌ Login failed:', error);
+      
+      let errorMessage: string;
+      
+      if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message === 'Invalid credentials') {
+        errorMessage = 'Invalid email or password. Please try again.';
+      } else if (error.code === 'NETWORK_ERROR') {
+        errorMessage = 'Cannot connect to server. Using demo mode.';
       } else {
-        throw new Error('Invalid credentials');
+        errorMessage = 'Login failed. Please try again.';
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      alert('Login failed. Try admin@example.com / admin123');
-      throw error;
+      
+      throw new Error(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    setToken(null);
+  const logout = async () => {
+    try {
+      await authAPI.logout();
+    } catch (error) {
+      console.warn('Logout API call failed, but continuing with local logout');
+    }
+    
+    // Очищаем локальные данные
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    alert('Logged out successfully');
+    
+    setToken(null);
+    setUser(null);
+    
+    // Переходим на главную страницу
+    navigate('/');
   };
 
   const value: AuthContextType = {
