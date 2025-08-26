@@ -1,127 +1,134 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authAPI } from '../services/Api';
+import { AuthContextType, LoginCredentials, User } from '../types';
+import { authAPI } from '../services/api';
 
-interface User {
-  email: string;
-  first_name: string;
-  last_name: string;
-}
+// Helper function for development-only logging
+const devLog = (message: string, ...args: any[]) => {
+    if (process.env.NODE_ENV === 'development') {
+        console.log(message, ...args);
+    }
+};
 
-interface AuthContextType {
-  user: User | null;
-  token: string | null;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-}
+const devError = (message: string, ...args: any[]) => {
+    if (process.env.NODE_ENV === 'development') {
+        console.error(message, ...args);
+    }
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
-  }
-  return context;
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
 };
 
 interface AuthProviderProps {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
+    const [user, setUser] = useState<User | null>(null);
+    const [token, setToken] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
 
-  useEffect(() => {
-    // Проверяем сохраненные данные при загрузке
-    const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
+    useEffect(() => {
+        // Check for stored auth data on mount
+        const storedToken = localStorage.getItem('token');
+        const storedUser = localStorage.getItem('user');
 
-    if (storedToken && storedUser) {
-      try {
-        setToken(storedToken);
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        console.error('Error parsing stored user data:', error);
+        if (storedToken && storedUser) {
+            setToken(storedToken);
+            setUser(JSON.parse(storedUser));
+        }
+
+        setIsLoading(false);
+    }, []);
+
+    const login = async (credentials: LoginCredentials) => {
+        try {
+            devLog('🔐 AuthContext: Starting login process');
+            devLog('📧 Login attempt for:', credentials.email);
+
+            const response = await authAPI.login(credentials);
+
+            devLog('✅ AuthContext: Login API call successful');
+            devLog('👤 User data:', response.user);
+            devLog('🔑 Token received:', !!response.access_token);
+
+            // Store auth data
+            localStorage.setItem('token', response.access_token);
+            localStorage.setItem('user', JSON.stringify(response.user));
+
+            setToken(response.access_token);
+            setUser(response.user);
+
+            const welcomeName = response.user.first_name || response.user.email;
+            devLog('🎉 AuthContext: Login successful, redirecting to dashboard');
+            navigate('/dashboard');
+        } catch (error: any) {
+            devError('❌ AuthContext: Login failed:', error);
+
+            let message: string;
+
+            // Use enhanced error messages
+            if (error.message && typeof error.message === 'string') {
+                message = error.message;
+            } else if (error.response?.data?.error) {
+                const serverError = error.response.data.error;
+                devLog('🚨 Server error message:', serverError);
+
+                // Map server errors to user-friendly messages
+                if (serverError.includes('Invalid credentials') || serverError.includes('not found')) {
+                    message = 'Invalid email or password. Please check your credentials.';
+                } else if (serverError.includes('not an admin')) {
+                    message = 'Access denied. Only administrators can access the dashboard.';
+                } else if (serverError.includes('Email and password required')) {
+                    message = 'Please enter both email and password.';
+                } else {
+                    message = serverError;
+                }
+            } else if (error.code === 'NETWORK_ERROR' || !error.response) {
+                message = 'Cannot connect to server. Please check your internet connection and try again.';
+            } else if (error.code === 'ECONNABORTED') {
+                message = 'Login timeout. Please try again.';
+            } else {
+                message = 'Login failed. Please try again later.';
+            }
+
+            devLog('📢 Error message for user:', message);
+            throw error;
+        }
+    };
+
+    const logout = () => {
+        // Clear auth data
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-      }
-    }
 
-    setIsLoading(false);
-  }, []);
+        setToken(null);
+        setUser(null);
 
-  const login = async (email: string, password: string) => {
-    setIsLoading(true);
-    try {
-      console.log('🔐 Attempting login for:', email);
-      
-      const response = await authAPI.login({ email, password });
-      
-      console.log('✅ Login successful:', response.user);
-      
-      // Сохраняем данные
-      localStorage.setItem('token', response.access_token);
-      localStorage.setItem('user', JSON.stringify(response.user));
-      
-      setToken(response.access_token);
-      setUser(response.user);
-      
-      // Переходим на dashboard
-      navigate('/dashboard');
-      
-    } catch (error: any) {
-      console.error('❌ Login failed:', error);
-      
-      let errorMessage: string;
-      
-      if (error.response?.data?.error) {
-        errorMessage = error.response.data.error;
-      } else if (error.message === 'Invalid credentials') {
-        errorMessage = 'Invalid email or password. Please try again.';
-      } else if (error.code === 'NETWORK_ERROR') {
-        errorMessage = 'Cannot connect to server. Using demo mode.';
-      } else {
-        errorMessage = 'Login failed. Please try again.';
-      }
-      
-      throw new Error(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        navigate('/login');
 
-  const logout = async () => {
-    try {
-      await authAPI.logout();
-    } catch (error) {
-      console.warn('Logout API call failed, but continuing with local logout');
-    }
-    
-    // Очищаем локальные данные
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    
-    setToken(null);
-    setUser(null);
-    
-    // Переходим на главную страницу
-    navigate('/');
-  };
+        // Call logout API (optional, since JWT is stateless)
+        authAPI.logout().catch(() => {
+            // Ignore logout errors
+        });
+    };
 
-  const value: AuthContextType = {
-    user,
-    token,
-    login,
-    logout,
-    isAuthenticated: !!token,
-    isLoading,
-  };
+    const value: AuthContextType = {
+        user,
+        token,
+        login,
+        logout,
+        isAuthenticated: !!token,
+        isLoading,
+    };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

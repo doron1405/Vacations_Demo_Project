@@ -1,62 +1,48 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Navbar from './components/Navbar';
+
 import Home from './pages/Home';
 import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
 import About from './pages/About';
-import './App.css';
+import NotFound from './pages/NotFound';
 
-// Simple Dashboard component
-const Dashboard = () => (
-    <div className="page">
-        <div className="dashboard-container">
-            <h1>Dashboard</h1>
-            <p>Welcome to the Vacation Statistics Dashboard!</p>
-            <div className="dashboard-content">
-                <div className="stats-card">
-                    <h3>Total Vacations</h3>
-                    <p className="stat-number">0</p>
-                </div>
-                <div className="stats-card">
-                    <h3>Active Users</h3>
-                    <p className="stat-number">0</p>
-                </div>
-                <div className="stats-card">
-                    <h3>This Month</h3>
-                    <p className="stat-number">0</p>
-                </div>
-            </div>
-        </div>
-    </div>
-);
+import './App.css';
 
 const App: React.FC = () => {
     return (
-        <AuthProvider>
-            <Router>
+        <Router>
+            <AuthProvider>
                 <div className="app">
-                    <nav className="navbar">
-                        <div className="nav-brand">
-                            <h2>Vacation Stats</h2>
-                        </div>
-                        <div className="nav-links">
-                            <Link to="/">Home</Link>
-                            <Link to="/login">Login</Link>
-                            <Link to="/about">About</Link>
-                        </div>
-                    </nav>
-
-                    <main className="main-content">
+                    <Navbar />
+                    <main className="app-main">
                         <Routes>
+                            {/* Public Routes */}
                             <Route path="/" element={<Home />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/about" element={<About />} />
-                            <Route path="/dashboard" element={<Dashboard />} />
+
+                            {/* Protected Routes */}
+                            <Route
+                                path="/dashboard"
+                                element={
+                                    <ProtectedRoute>
+                                        <Dashboard />
+                                    </ProtectedRoute>
+                                }
+                            />
+
+                            {/* 404 Route - Catch all unmatched routes */}
+                            <Route path="*" element={<NotFound />} />
                         </Routes>
                     </main>
                 </div>
-            </Router>
-        </AuthProvider>
+            </AuthProvider>
+        </Router>
     );
 };
 
