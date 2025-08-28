@@ -3,100 +3,103 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-// Mock AuthContext at module level (hoisted) so components read the mocked hook
+// Mock the stats API module to avoid real HTTP calls
+jest.mock('../services/Api', () => ({
+    statsAPI: {
+        getSummaryStats: jest.fn(),
+    },
+}));
+
+// Mock AuthContext useAuth hook
 jest.mock('../context/AuthContext', () => ({
-  useAuth: jest.fn(() => ({
-    user: { email: 'admin@example.com', first_name: 'Admin', last_name: 'User' },
-    token: 'token',
-    login: jest.fn(),
-    logout: jest.fn(),
-    isAuthenticated: true,
-    isLoading: false,
-  })),
+    useAuth: jest.fn(),
 }));
 
 import ProtectedRoute from '../components/ProtectedRoute';
 import Dashboard from '../pages/Dashboard';
-
-// Mock the stats API module to avoid real HTTP calls
-jest.mock('../services/Api', () => ({
-  statsAPI: {
-    getSummaryStats: jest.fn().mockResolvedValue({
-      vacationStats: { pastVacations: 1, ongoingVacations: 2, futureVacations: 3 },
-      totalUsers: 5,
-      totalLikes: 10,
-      topDestinations: [
-        { destination: 'Rome', likes: 4 },
-        { destination: 'Paris', likes: 3 },
-      ],
-    }),
-  },
-}));
+import { statsAPI } from '../services/Api';
+import { useAuth } from '../context/AuthContext';
 
 describe('Dashboard Page', () => {
-  afterEach(() => {
-    jest.resetModules();
-  });
-
-  test('positive: renders dashboard content for authenticated user', async () => {
-    const { useAuth } = require('../context/AuthContext');
-    (useAuth as jest.Mock).mockReturnValue({
-      user: { email: 'admin@example.com', first_name: 'Admin', last_name: 'User' },
-      token: 'token',
-      login: jest.fn(),
-      logout: jest.fn(),
-      isAuthenticated: true,
-      isLoading: false,
+    beforeEach(() => {
+        jest.clearAllMocks();
+        // Set up default mock response
+        (statsAPI.getSummaryStats as jest.Mock).mockResolvedValue({
+            vacationStats: { pastVacations: 1, ongoingVacations: 2, futureVacations: 3 },
+            totalUsers: 5,
+            totalLikes: 10,
+            topDestinations: [
+                { destination: 'Rome', likes: 4 },
+                { destination: 'Paris', likes: 3 },
+            ],
+        });
     });
 
-    render(
-      <MemoryRouter initialEntries={["/dashboard"]}>
-        <Routes>
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </MemoryRouter>
-    );
+    test('positive: renders dashboard content for authenticated user', async () => {
+        // Mock authenticated user
+        (useAuth as jest.Mock).mockReturnValue({
+            user: { email: 'admin@example.com', first_name: 'Admin', last_name: 'User' },
+            token: 'token',
+            login: jest.fn(),
+            logout: jest.fn(),
+            isAuthenticated: true,
+            isLoading: false,
+        });
 
-    expect(await screen.findByText(/statistics dashboard/i)).toBeInTheDocument();
-    expect(await screen.findByText(/total users/i)).toBeInTheDocument();
-  });
+        render(
+            <MemoryRouter initialEntries={["/dashboard"]}>
+                <Routes>
+                    <Route
+                        path="/dashboard"
+                        element={
+                            <ProtectedRoute>
+                                <Dashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                </Routes>
+            </MemoryRouter>
+        );
 
-  test('negative: redirects unauthenticated user to login', async () => {
-    const { useAuth } = require('../context/AuthContext');
-    (useAuth as jest.Mock).mockReturnValue({
-      user: null,
-      token: null,
-      login: jest.fn(),
-      logout: jest.fn(),
-      isAuthenticated: false,
-      isLoading: false,
+        // Wait for the dashboard to load and check for the main heading
+        expect(await screen.findByText(/statistics dashboard/i)).toBeInTheDocument();
+
+        // Check for stats cards that should be rendered
+        expect(await screen.findByText(/total users/i)).toBeInTheDocument();
+        expect(await screen.findByText(/total likes/i)).toBeInTheDocument();
+        expect(await screen.findByText(/total vacations/i)).toBeInTheDocument();
     });
 
-    render(
-      <MemoryRouter initialEntries={["/dashboard"]}>
-        <Routes>
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/login" element={<div>Login Page</div>} />
-        </Routes>
-      </MemoryRouter>
-    );
+    test('negative: redirects unauthenticated user to login', async () => {
+        // Mock unauthenticated user
+        (useAuth as jest.Mock).mockReturnValue({
+            user: null,
+            token: null,
+            login: jest.fn(),
+            logout: jest.fn(),
+            isAuthenticated: false,
+            isLoading: false,
+        });
 
-    expect(await screen.findByText(/login page/i)).toBeInTheDocument();
-  });
+        render(
+            <MemoryRouter initialEntries={["/dashboard"]}>
+                <Routes>
+                    <Route
+                        path="/dashboard"
+                        element={
+                            <ProtectedRoute>
+                                <Dashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route path="/login" element={<div>Login Page</div>} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        // Should redirect to login page
+        expect(await screen.findByText(/login page/i)).toBeInTheDocument();
+    });
 });
 
 
