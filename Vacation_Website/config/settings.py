@@ -17,7 +17,7 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
-    default='localhost,127.0.0.1,56.228.81.220'
+    default='localhost,127.0.0.1,56.228.81.220,3.67.174.202'
 ).split(',')
 
 # Application definition

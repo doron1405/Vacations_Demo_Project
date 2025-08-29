@@ -21,7 +21,7 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=24)
 
 # Enable CORS for React frontend
 CORS(app, origins=['http://localhost:3000', 'http://localhost:3001',
-     'http://localhost:80','http://56.228.81.220:3000', 'http://stats-frontend', 'http://localhost'])
+     'http://localhost:80','http://3.67.174.202:3000','http://56.228.81.220:3000', 'http://stats-frontend', 'http://localhost'])
 jwt = JWTManager(app)
 
 # Database configuration

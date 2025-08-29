@@ -34,7 +34,7 @@ services:
       DB_PORT: 5432
       DEBUG: ${DJANGO_DEBUG:-True}
       SECRET_KEY: ${DJANGO_SECRET_KEY:-django-secret-key-change-in-production}
-      ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,0.0.0.0,56.228.81.220,django-website}
+      ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,0.0.0.0,56.228.81.220,3.67.174.202,django-website}
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
