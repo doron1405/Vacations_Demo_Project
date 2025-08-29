@@ -51,14 +51,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const login = async (credentials: LoginCredentials) => {
         try {
-            devLog('🔐 AuthContext: Starting login process');
-            devLog('📧 Login attempt for:', credentials.email);
+            devLog('AuthContext: Starting login process');
+            devLog('Login attempt for:', credentials.email);
 
             const response = await authAPI.login(credentials);
 
-            devLog('✅ AuthContext: Login API call successful');
-            devLog('👤 User data:', response.user);
-            devLog('🔑 Token received:', !!response.access_token);
+            devLog('AuthContext: Login API call successful');
+            devLog('User data:', response.user);
+            devLog('Token received:', !!response.access_token);
 
             // Store auth data
             localStorage.setItem('token', response.access_token);
@@ -68,10 +68,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setUser(response.user);
 
             const welcomeName = response.user.first_name || response.user.email;
-            devLog('🎉 AuthContext: Login successful, redirecting to dashboard');
+            devLog('AuthContext: Login successful, redirecting to dashboard');
             navigate('/dashboard');
         } catch (error: any) {
-            devError('❌ AuthContext: Login failed:', error);
+            devError('AuthContext: Login failed:', error);
 
             let message: string;
 
@@ -80,7 +80,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 message = error.message;
             } else if (error.response?.data?.error) {
                 const serverError = error.response.data.error;
-                devLog('🚨 Server error message:', serverError);
+                devLog('Server error message:', serverError);
 
                 // Map server errors to user-friendly messages
                 if (serverError.includes('Invalid credentials') || serverError.includes('not found')) {
@@ -100,7 +100,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 message = 'Login failed. Please try again later.';
             }
 
-            devLog('📢 Error message for user:', message);
+            devLog('Error message for user:', message);
             throw error;
         }
     };

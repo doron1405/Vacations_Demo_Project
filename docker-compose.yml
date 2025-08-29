@@ -25,7 +25,7 @@ services:
   django-website:
     build: Vacation_Website
     container_name: django-vacation-website
-    env_file: ./docker.env
+    env_file: docker.env
     environment:
       DB_NAME: ${POSTGRES_DB:-project_db}
       DB_USER: ${POSTGRES_USER:-postgres}

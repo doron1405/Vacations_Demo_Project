@@ -1,4 +1,4 @@
-import axios from 'axios';
+ import axios from 'axios';
 import {
     AuthResponse,
     LoginCredentials,
@@ -24,7 +24,7 @@ const devError = (message: string, ...args: any[]) => {
 
 // Create axios instance with base configuration
 const api = axios.create({
-    baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5001/api',
+    baseURL: process.env.REACT_APP_API_URL || 'http://3.67.174.202:5001/api', // EC2 public IP + Flask API port
     headers: {
         'Content-Type': 'application/json',
     },
@@ -34,7 +34,7 @@ const api = axios.create({
 // Add debugging and token to requests
 api.interceptors.request.use(
     (config) => {
-        devLog('🚀 API Request:', {
+        devLog(' API Request:', {
             method: config.method?.toUpperCase(),
             url: `${config.baseURL}${config.url}`,
             data: config.data,
@@ -44,12 +44,12 @@ api.interceptors.request.use(
         const token = localStorage.getItem('token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
-            devLog('🔑 Token added to request');
+            devLog(' Token added to request');
         }
         return config;
     },
     (error) => {
-        devError('❌ Request Error:', error);
+        devError(' Request Error:', error);
         return Promise.reject(error);
     }
 );
@@ -57,7 +57,7 @@ api.interceptors.request.use(
 // Enhanced response interceptor with debugging and better error handling
 api.interceptors.response.use(
     (response) => {
-        devLog('✅ API Response:', {
+        devLog(' API Response:', {
             status: response.status,
             url: response.config.url,
             data: response.data
@@ -65,7 +65,7 @@ api.interceptors.response.use(
         return response;
     },
     (error) => {
-        devError('❌ API Error:', {
+        devError(' API Error:', {
             status: error.response?.status,
             statusText: error.response?.statusText,
             url: error.config?.url,
@@ -102,19 +102,19 @@ api.interceptors.response.use(
 export const authAPI = {
     login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
         try {
-            devLog('🔐 Attempting login for:', credentials.email);
-            devLog('🌍 API Base URL:', process.env.REACT_APP_API_URL || 'http://localhost:5001/api');
+            devLog(' Attempting login for:', credentials.email);
+            devLog(' API Base URL:', process.env.REACT_APP_API_URL || 'http://3.67.174.202:5001/api');
 
             const response = await api.post<AuthResponse>('/login', credentials);
 
-            devLog('✅ Login successful:', {
+            devLog(' Login successful:', {
                 user: response.data.user,
                 tokenExists: !!response.data.access_token
             });
 
             return response.data;
         } catch (error: any) {
-            devError('🚫 Login failed:', error);
+            devError(' Login failed:', error);
 
             // Enhanced error handling with specific messages
             if (error.response?.status === 401) {
@@ -136,11 +136,11 @@ export const authAPI = {
 
     logout: async (): Promise<void> => {
         try {
-            devLog('👋 Logging out user');
+            devLog(' Logging out user');
             await api.post('/logout');
-            devLog('✅ Logout successful');
+            devLog(' Logout successful');
         } catch (error) {
-            devError('❌ Logout error (ignoring):', error);
+            devError(' Logout error (ignoring):', error);
             // Ignore logout errors since JWT is stateless
         }
     },

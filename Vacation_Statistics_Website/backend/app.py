@@ -322,21 +322,21 @@ def startup_check():
     """Check admin users on startup for debugging."""
     try:
         print("\n" + "="*50)
-        print("🔍 FLASK BACKEND STARTUP - CHECKING ADMIN USERS")
+        print(" FLASK BACKEND STARTUP - CHECKING ADMIN USERS")
         print("="*50)
 
         conn = get_db_connection()
         list_admin_users(conn)
         conn.close()
 
-        print("\n💡 To create new admin users:")
+        print("\n To create new admin users:")
         print("   1. Access Django admin at http://localhost:8000/admin")
         print("   2. Or create via Django shell in the Django container")
         print("   3. Make sure user has 'is_staff = True' to access dashboard")
         print("="*50 + "\n")
 
     except Exception as e:
-        print(f"❌ Error checking admin users: {e}")
+        print(f" Error checking admin users: {e}")
 
 
 if __name__ == '__main__':
