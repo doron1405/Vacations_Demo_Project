@@ -17,7 +17,7 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
-    default='localhost,127.0.0.1,56.228.81.220,3.67.174.202'
+    default='localhost,127.0.0.1,56.228.81.220,3.67.174.202,35.159.86.101'
 ).split(',')
 
 # Application definition
@@ -154,5 +154,7 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://56.228.81.220:3000",
+    "http://56.228.81.220:3000"
+    "http://35.159.86.101:3000"
+    ,
 ]

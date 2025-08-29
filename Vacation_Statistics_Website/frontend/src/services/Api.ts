@@ -24,7 +24,7 @@ const devError = (message: string, ...args: any[]) => {
 
 // Create axios instance with base configuration
 const api = axios.create({
-    baseURL: process.env.REACT_APP_API_URL || 'http://3.67.174.202:5001/api', // EC2 public IP + Flask API port
+    baseURL: process.env.REACT_APP_API_URL || 'http://35.159.86.101/api', // EC2 public IP + Flask API port
     headers: {
         'Content-Type': 'application/json',
     },
@@ -103,7 +103,7 @@ export const authAPI = {
     login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
         try {
             devLog(' Attempting login for:', credentials.email);
-            devLog(' API Base URL:', process.env.REACT_APP_API_URL || 'http://3.67.174.202:5001/api');
+            devLog(' API Base URL:', process.env.REACT_APP_API_URL || 'http://35.159.86.101:5001/api');
 
             const response = await api.post<AuthResponse>('/login', credentials);
 
