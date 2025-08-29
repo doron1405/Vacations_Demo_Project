@@ -24,11 +24,11 @@ const devError = (message: string, ...args: any[]) => {
 
 // Create axios instance with base configuration
 const api = axios.create({
-    baseURL: process.env.REACT_APP_API_URL || 'http://35.159.86.101:5001/api', // EC2 public IP + Flask API port
+    baseURL: process.env.REACT_APP_API_URL || '/api', // use relative path -> goes through Nginx
     headers: {
         'Content-Type': 'application/json',
     },
-    timeout: 10000, // 10 second timeout
+    timeout: 10000,
 });
 
 // Add debugging and token to requests
