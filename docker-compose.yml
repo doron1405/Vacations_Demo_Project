@@ -23,7 +23,7 @@ services:
 
   # Django Vacation Website (Main Website - Part 2)
   django-website:
-    build: /Vacation_Website
+    build: Vacation_Website
     container_name: django-vacation-website
     env_file: ./docker.env
     environment:
