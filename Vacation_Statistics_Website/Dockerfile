@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y \
     postgresql-client \
     nginx \
     supervisor \
+    dos2unix \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy backend requirements and install Python dependencies
@@ -46,7 +47,7 @@ COPY docker/config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Copy startup script
 COPY docker/start.sh /app/start.sh
-RUN chmod +x /app/start.sh
+RUN dos2unix /app/start.sh && chmod +x /app/start.sh
 
 # Create necessary directories
 RUN mkdir -p /var/log/supervisor /var/log/nginx
