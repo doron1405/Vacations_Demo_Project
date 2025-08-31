@@ -4,6 +4,9 @@ import { FiMail, FiLock, FiLogIn } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 import './Login.css';
 
+/**
+ * Login page component that handles admin authentication with form validation.
+ */
 const Login: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -19,6 +22,7 @@ const Login: React.FC = () => {
         }
     }, [isAuthenticated, navigate]);
 
+    /**Handles form submission for user authentication with validation and error handling.*/
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');

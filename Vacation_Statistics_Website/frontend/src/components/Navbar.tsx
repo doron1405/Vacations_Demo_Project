@@ -4,10 +4,14 @@ import { FiBarChart2, FiLogOut, FiInfo, FiHome } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
+/**
+ * Navigation bar component that displays different menu items based on authentication status.
+ */
 const Navbar: React.FC = () => {
     const { user, logout, isAuthenticated } = useAuth();
     const location = useLocation();
 
+    /**Determines if a navigation link is currently active based on the current route.*/
     const isActive = (path: string) => location.pathname === path;
 
     return (

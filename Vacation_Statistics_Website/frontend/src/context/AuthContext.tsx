@@ -18,6 +18,9 @@ const devError = (message: string, ...args: any[]) => {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/**
+ * Custom hook to access authentication context throughout the application.
+ */
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {
@@ -30,6 +33,9 @@ interface AuthProviderProps {
     children: React.ReactNode;
 }
 
+/**
+ * Authentication provider component that manages user login state and JWT tokens.
+ */
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
@@ -49,6 +55,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsLoading(false);
     }, []);
 
+    /**
+     * Handles user login by authenticating credentials and storing JWT token.
+     */
     const login = async (credentials: LoginCredentials) => {
         try {
             devLog('AuthContext: Starting login process');
@@ -105,6 +114,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
     };
 
+    /**
+     * Handles user logout by clearing stored tokens and redirecting to login page.
+     */
     const logout = () => {
         // Clear auth data
         localStorage.removeItem('token');

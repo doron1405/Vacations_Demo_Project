@@ -13,6 +13,10 @@ import NotFound from './pages/NotFound';
 
 import './App.css';
 
+/**
+ * Main application component that sets up routing and authentication context.
+ * Provides the overall structure for the vacation statistics dashboard.
+ */
 const App: React.FC = () => {
     return (
         <Router>

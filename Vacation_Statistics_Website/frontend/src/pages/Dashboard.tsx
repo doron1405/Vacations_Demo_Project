@@ -25,12 +25,16 @@ import { statsAPI } from '../services/Api';
 import { SummaryStats } from '../types';
 import './Dashboard.css';
 
+/**
+ * Dashboard page component that displays vacation statistics with charts and analytics.
+ */
 const Dashboard: React.FC = () => {
     const [stats, setStats] = useState<SummaryStats | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
 
+    /**Fetches all dashboard statistics from the API and updates the component state.*/
     const fetchStats = async () => {
         setIsLoading(true);
         setError('');

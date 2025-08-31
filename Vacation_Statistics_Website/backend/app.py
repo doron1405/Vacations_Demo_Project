@@ -21,7 +21,7 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=24)
 
 # Enable CORS for React frontend
 CORS(app, origins=['http://localhost:3000', 'http://localhost:3001',
-     'http://localhost:80','http://3.67.174.202:3000','http://56.228.81.220:3000', 'http://stats-frontend', 'http://localhost'])
+     'http://localhost:80', 'http://3.67.174.202:3000', 'http://56.228.81.220:3000', 'http://stats-frontend', 'http://localhost'])
 jwt = JWTManager(app)
 
 # Database configuration
@@ -35,28 +35,25 @@ DB_CONFIG = {
 
 
 def get_db_connection():
-    """Create and return a database connection."""
+    """Creates and returns a PostgreSQL database connection."""
     return psycopg2.connect(**DB_CONFIG, cursor_factory=RealDictCursor)
 
 
 @app.route('/', methods=['GET'])
 def home():
-    """Home page to verify server is running."""
+    """Serves the home page to verify the server is running."""
     return render_template('index.html')
 
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
-    """Health check endpoint."""
+    """Returns the health status of the API service."""
     return jsonify({'status': 'healthy', 'service': 'stats-api'}), 200
 
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    """
-    Login endpoint - authenticates admin users only.
-    Expects: { "email": "admin@example.com", "password": "password" }
-    """
+    """Authenticates admin users and returns a JWT access token."""
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
@@ -169,10 +166,7 @@ def vacation_stats():
 @app.route('/api/users/total', methods=['GET'])
 @jwt_required()
 def total_users():
-    """
-    Get total number of users.
-    Returns: { "totalUsers": 37 }
-    """
+    """Returns the total count of non-admin users in the system."""
     try:
         conn = get_db_connection()
         cur = conn.cursor()
@@ -193,10 +187,7 @@ def total_users():
 @app.route('/api/likes/total', methods=['GET'])
 @jwt_required()
 def total_likes():
-    """
-    Get total number of likes.
-    Returns: { "totalLikes": 84 }
-    """
+    """Returns the total count of likes across all vacations."""
     try:
         conn = get_db_connection()
         cur = conn.cursor()
@@ -216,10 +207,7 @@ def total_likes():
 @app.route('/api/likes/distribution', methods=['GET'])
 @jwt_required()
 def likes_distribution():
-    """
-    Get distribution of likes by destination.
-    Returns: [{ "destination": "Rome", "likes": 3 }, ...]
-    """
+    """Returns the distribution of likes grouped by vacation destinations."""
     try:
         conn = get_db_connection()
         cur = conn.cursor()
@@ -254,10 +242,7 @@ def likes_distribution():
 @app.route('/api/stats/summary', methods=['GET'])
 @jwt_required()
 def stats_summary():
-    """
-    Get all statistics in one call (for dashboard).
-    Combines all stats endpoints for efficiency.
-    """
+    """Returns all dashboard statistics in a single API call for efficiency."""
     try:
         conn = get_db_connection()
         cur = conn.cursor()
@@ -319,7 +304,7 @@ def stats_summary():
 
 
 def startup_check():
-    """Check admin users on startup for debugging."""
+    """Checks and displays admin users on server startup for debugging purposes."""
     try:
         print("\n" + "="*50)
         print(" FLASK BACKEND STARTUP - CHECKING ADMIN USERS")

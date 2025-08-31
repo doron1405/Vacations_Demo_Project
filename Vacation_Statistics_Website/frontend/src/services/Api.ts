@@ -1,4 +1,4 @@
- import axios from 'axios';
+import axios from 'axios';
 import {
     AuthResponse,
     LoginCredentials,
@@ -98,8 +98,11 @@ api.interceptors.response.use(
     }
 );
 
-// Auth endpoints
+/**
+ * Authentication API endpoints for login and logout operations.
+ */
 export const authAPI = {
+    /**Authenticates user credentials and returns JWT token with user data.*/
     login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
         try {
             devLog(' Attempting login for:', credentials.email);
@@ -134,6 +137,7 @@ export const authAPI = {
         }
     },
 
+    /**Logs out the current user by invalidating the session.*/
     logout: async (): Promise<void> => {
         try {
             devLog(' Logging out user');
@@ -146,28 +150,35 @@ export const authAPI = {
     },
 };
 
-// Statistics endpoints
+/**
+ * Statistics API endpoints for retrieving dashboard data and analytics.
+ */
 export const statsAPI = {
+    /**Retrieves vacation statistics including past, ongoing, and future vacations.*/
     getVacationStats: async (): Promise<VacationStats> => {
         const response = await api.get<VacationStats>('/stats/vacations');
         return response.data;
     },
 
+    /**Retrieves the total count of users in the system.*/
     getTotalUsers: async (): Promise<TotalUsers> => {
         const response = await api.get<TotalUsers>('/users/total');
         return response.data;
     },
 
+    /**Retrieves the total count of likes across all vacations.*/
     getTotalLikes: async (): Promise<TotalLikes> => {
         const response = await api.get<TotalLikes>('/likes/total');
         return response.data;
     },
 
+    /**Retrieves the distribution of likes grouped by vacation destinations.*/
     getLikesDistribution: async (): Promise<LikeDistribution[]> => {
         const response = await api.get<LikeDistribution[]>('/likes/distribution');
         return response.data;
     },
 
+    /**Retrieves all dashboard statistics in a single API call for efficiency.*/
     getSummaryStats: async (): Promise<SummaryStats> => {
         const response = await api.get<SummaryStats>('/stats/summary');
         return response.data;

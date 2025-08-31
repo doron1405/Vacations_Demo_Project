@@ -7,19 +7,7 @@ import base64
 
 
 def verify_django_password(password: str, encoded: str) -> bool:
-    """
-    Verify a password against Django's PBKDF2 hash.
-
-    Django password format: 
-    pbkdf2_sha256$iterations$salt$hash
-
-    Args:
-        password: Plain text password to verify
-        encoded: Django's encoded password hash
-
-    Returns:
-        bool: True if password matches, False otherwise
-    """
+    """Verifies a plain text password against Django's PBKDF2 hash format."""
     if not encoded:
         return False
 
@@ -47,9 +35,7 @@ def verify_django_password(password: str, encoded: str) -> bool:
 
 
 def list_admin_users(conn):
-    """
-    List all admin users in the database for debugging purposes.
-    """
+    """Lists all admin users in the database for debugging purposes."""
     cur = conn.cursor()
 
     cur.execute("""

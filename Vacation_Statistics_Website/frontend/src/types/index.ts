@@ -1,52 +1,63 @@
-// Type definitions for the application
+/**
+ * Type definitions for the vacation statistics dashboard application.
+ */
 
+/**User information structure for authentication and display.*/
 export interface User {
     email: string;
     first_name: string;
     last_name: string;
-  }
-  
-  export interface LoginCredentials {
+}
+
+/**Login credentials structure for authentication requests.*/
+export interface LoginCredentials {
     email: string;
     password: string;
-  }
-  
-  export interface AuthResponse {
+}
+
+/**Authentication response structure containing JWT token and user data.*/
+export interface AuthResponse {
     access_token: string;
     user: User;
-  }
-  
-  export interface VacationStats {
+}
+
+/**Vacation statistics structure for time-based vacation counts.*/
+export interface VacationStats {
     pastVacations: number;
     ongoingVacations: number;
     futureVacations: number;
-  }
-  
-  export interface TotalUsers {
+}
+
+/**Total users count structure for user statistics.*/
+export interface TotalUsers {
     totalUsers: number;
-  }
-  
-  export interface TotalLikes {
+}
+
+/**Total likes count structure for engagement statistics.*/
+export interface TotalLikes {
     totalLikes: number;
-  }
-  
-  export interface LikeDistribution {
+}
+
+/**Like distribution structure for destination-based analytics.*/
+export interface LikeDistribution {
     destination: string;
     likes: number;
-  }
-  
-  export interface SummaryStats {
+}
+
+/**Summary statistics structure combining all dashboard metrics.*/
+export interface SummaryStats {
     vacationStats: VacationStats;
     totalUsers: number;
     totalLikes: number;
     topDestinations: LikeDistribution[];
-  }
-  
-  export interface AuthContextType {
+}
+
+/**Authentication context structure for React context provider.*/
+export interface AuthContextType {
     user: User | null;
     token: string | null;
     login: (credentials: LoginCredentials) => Promise<void>;
     logout: () => void;
     isAuthenticated: boolean;
     isLoading: boolean;
-  }
+}
