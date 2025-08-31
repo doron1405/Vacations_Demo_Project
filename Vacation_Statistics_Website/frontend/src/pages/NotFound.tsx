@@ -4,6 +4,9 @@ import { FiHome, FiArrowLeft, FiAlertTriangle } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 import './NotFound.css';
 
+/**
+ * 404 Not Found page component that displays when users navigate to non-existent routes.
+ */
 const NotFound: React.FC = () => {
     const { isAuthenticated } = useAuth();
 

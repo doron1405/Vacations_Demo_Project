@@ -3,6 +3,9 @@ import { FiGithub, FiMail, FiLinkedin, FiCode, FiDatabase, FiServer } from 'reac
 import { SiReact, SiFlask, SiPostgresql, SiDocker, SiTypescript } from 'react-icons/si';
 import './About.css';
 
+/**
+ * About page component that displays project information, technology stack, and developer details.
+ */
 const About: React.FC = () => {
     return (
         <div className="about">

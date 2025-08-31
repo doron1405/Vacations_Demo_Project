@@ -163,26 +163,26 @@
 
         <h1>Server Running Successfully!</h1>
         <p class="subtitle">Vacation Stats API Backend</p>
-        <p class="status-text">🚀 All systems operational</p>
+        <p class="status-text">All systems operational</p>
 
         <div class="info-grid">
             <div class="info-card">
-                <h3>🌐 Server Status</h3>
+                <h3>Server Status</h3>
                 <p>Flask development server is running on port 5001</p>
             </div>
 
             <div class="info-card">
-                <h3>🛠️ Environment</h3>
+                <h3>Environment</h3>
                 <p>Debug mode enabled<br>CORS configured for React frontend</p>
             </div>
 
             <div class="info-card">
-                <h3>🔧 Dependencies</h3>
+                <h3>Dependencies</h3>
                 <p>PostgreSQL connection ready<br>JWT authentication enabled</p>
             </div>
 
             <div class="info-card">
-                <h3>📊 Purpose</h3>
+                <h3>Purpose</h3>
                 <p>Vacation statistics dashboard API<br>Admin authentication & analytics</p>
             </div>
         </div>
@@ -231,14 +231,14 @@
                 const response = await fetch('/api/health');
                 const data = await response.json();
                 resultDiv.innerHTML = `
-                    <strong>✅ Success!</strong><br>
+                    <strong> Success!</strong><br>
                     Status: ${response.status}<br>
                     Response: ${JSON.stringify(data, null, 2)}
                 `;
                 resultDiv.style.color = '#4CAF50';
             } catch (error) {
                 resultDiv.innerHTML = `
-                    <strong>❌ Error!</strong><br>
+                    <strong> Error!</strong><br>
                     ${error.message}
                 `;
                 resultDiv.style.color = '#f44336';
