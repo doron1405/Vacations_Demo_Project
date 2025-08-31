@@ -1,7 +1,7 @@
 @echo off
 echo.
 echo ====================================
-echo 🧹 CLEANING DOCKER ENVIRONMENT
+echo  CLEANING DOCKER ENVIRONMENT
 echo ====================================
 echo.
 
@@ -18,6 +18,6 @@ echo Removing any unused volumes...
 docker volume prune -f
 
 echo.
-echo ✅ Docker environment cleaned!
+echo  Docker environment cleaned!
 echo.
 pause
