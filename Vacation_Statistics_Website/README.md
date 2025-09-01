@@ -6,6 +6,7 @@
 - Authentication: JWT (JSON Web Tokens)
 - DevOps: Docker, Docker Compose, AWS compatibility
 - Other: RESTful API, modern responsive UI
+- DockerHub of the project : https://hub.docker.com/repositories/al7koz
 
 ## Overview
 
